@@ -20,8 +20,11 @@ function populateYearSelector() {
 populateYearSelector();
 
 $(document).ready(function() {
+	$('#year-selector').change(function() {
+		createWorkbookForYear($(this).val() || new Date().getFullYear());
+	})
 	$('#generate-year-plan').click(function() {
-		createWorkbookForYear($('#year-selector').val() || new Date().getFullYear());
+		downloadYearPlan($('#year-selector').val() || new Date().getFullYear())
 	});
 	// Init Webworker.
 	initWebWorker();
@@ -41,7 +44,7 @@ function YPGrWorkerMessageHandler(event) {
 }
 /* Uses a webworker if window.Worker exists other wise does calculation on main thread. */
 function createWorkbookForYear(year) {
-	const workbook = XLSX.utils.book_new();
+	window.workbook = XLSX.utils.book_new();
 
 	// XLSX.utils.aoa_to_sheet
 	// delete to WebWorker so main thread is free.
@@ -57,7 +60,6 @@ function createWorkbookForYear(year) {
 		for (let i = 0 ; i < 6; i++) {
 			daysTop = daysTop.concat(YGPrCore.dayMap);
 		}
-		daysTop = daysTop.slice(0, 36);
 		console.log(daysTop.length);
 		let emptyBlocksAtStart = yearData[0][0];
 		let emptyBlocksAtEnd = yearData[0][yearData[0].length - 1];
@@ -80,24 +82,26 @@ function createWorkbookForYear(year) {
 		console.log(yearSheetData);
 		console.log(yearData[11]);
 		const worksheet = XLSX.utils.aoa_to_sheet(yearSheetData);
-		XLSX.utils.book_append_sheet(workbook, worksheet,'Planner');
+		XLSX.utils.book_append_sheet(window.workbook, worksheet,'Planner');
 		$('#generated-year-data').html(
 			`
-				<pre>
-					    ${daysTop.join('')}
-					Jan  ${generateConcatArray(yearData, 0).join('         ')}
-					Feb  ${generateConcatArray(yearData, 1).join('         ')}
-					Mar  ${generateConcatArray(yearData, 2).join('         ')}
-					Apr  ${generateConcatArray(yearData, 3).join('         ')}
-					May  ${generateConcatArray(yearData, 4).join('         ')}
-					Jun  ${generateConcatArray(yearData, 5).join('         ')}
-					Jul  ${generateConcatArray(yearData, 6).join('         ')}
-					Aug  ${generateConcatArray(yearData, 7).join('         ')}
-					Sep  ${generateConcatArray(yearData, 8).join('         ')}
-					Oct  ${generateConcatArray(yearData, 9).join('         ')}
-					Nov  ${generateConcatArray(yearData, 10).join('         ')}
-					Dec  ${generateConcatArray(yearData, 11).join('         ')}
-				</pre>
+				<table class="cinereousTable">
+					<thead>
+					<tr><td></td>${daysTop.map(value => `<td>${value}</td>`).join('')} </tr>
+					</thead>
+					<tr><td>Jan</td>  ${generateConcatArray(yearData, 0).join('')}</tr>
+					<tr><td>Feb</td>  ${generateConcatArray(yearData, 1).join('')}</tr>
+					<tr><td>Mar</td>  ${generateConcatArray(yearData, 2).join('')}</tr>
+					<tr><td>Apr</td>  ${generateConcatArray(yearData, 3).join('')}</tr>
+					<tr><td>May</td>  ${generateConcatArray(yearData, 4).join('')}</tr>
+					<tr><td>Jun</td>  ${generateConcatArray(yearData, 5).join('')}</tr>
+					<tr><td>Jul</td>  ${generateConcatArray(yearData, 6).join('')}</tr>
+					<tr><td>Aug</td>  ${generateConcatArray(yearData, 7).join('')}</tr>
+					<tr><td>Sep</td>  ${generateConcatArray(yearData, 8).join('')}</tr>
+					<tr><td>Oct</td>  ${generateConcatArray(yearData, 9).join('')}</tr>
+					<tr><td>Nov</td>  ${generateConcatArray(yearData, 10).join('')}</tr>
+					<tr><td>Dec</td>  ${generateConcatArray(yearData, 11).join('')}</tr>
+				</table>
 			`
 		)
 	}
@@ -105,10 +109,15 @@ function createWorkbookForYear(year) {
 	// XLSX.writeFile(workbook, `YPGr-${year}.xlsb`);
 }
 
+function downloadYearPlan(year) {
+	// Download file once we are done with creating the year planner.
+	XLSX.writeFile(window.workbook, `YPGr-${year}.xlsb`);
+}
+
 function generateConcatArray(yearData, monthIndex) {
 	let daysToFillAtEnd = 6 - yearData[monthIndex][yearData[monthIndex].length - 1] + 1;
 	if (daysToFillAtEnd === 7) {
 		daysToFillAtEnd = 0;
 	}
-	return [].concat(new Array(yearData[monthIndex][0]).fill('X'), yearData[monthIndex].map(value => '='), new Array(daysToFillAtEnd).fill('X'));
+	return [].concat(new Array(yearData[monthIndex][0]).fill('<td style="">X</td>'), yearData[monthIndex].map(value => '<td>=</td>'), new Array(daysToFillAtEnd).fill('<td>X</td>'));
 }
