@@ -1,0 +1,21 @@
+{
+  "name": "year-planner-generator",
+  "homepage": "https://github.com/pareshchouhan/year-planner-generator",
+  "authors": [
+    "Paresh Chouhan <pareshchouhan2013@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "GPL3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "js-xlsx": "^0.14.0",
+    "jquery": "^3.4.1"
+  }
+}
