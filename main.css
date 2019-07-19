@@ -3,10 +3,14 @@
     .no-print, .no-print *
     {
         display: none !important;
-    }
+		}
 }
 
 @media screen {
+}
+
+body {
+	-webkit-print-color-adjust:exact;
 }
 
 table.cinereousTable {
@@ -20,7 +24,7 @@ table.cinereousTable td, table.cinereousTable th {
 	padding: 4px 4px;
 }
 table.cinereousTable tbody td {
-	font-size: 13px;
+	/* font-size: 13px; */
 }
 table.cinereousTable thead {
 	background: #948473;
@@ -50,4 +54,25 @@ table.cinereousTable tfoot {
 }
 table.cinereousTable tfoot td {
 	font-size: 16px;
+}
+
+.ypgr-table {
+	width: 100%;
+	height: 100%;
+	transform: translate(-500px, 1000px) rotateZ(90deg);
+}
+
+#generated-year-data {
+	height: 100vw;
+	width: 100vh;
+}
+
+.ypgr-table-month {
+	font-size: 32px;
+	font-weight: 600;
+}
+
+.ypgr-table-day {
+	/* font-size: 32px;
+	font-weight: 600; */
 }

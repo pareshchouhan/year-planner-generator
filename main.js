@@ -1,3 +1,4 @@
+const Excel = require('exceljs');
 
 function populateYearSelector() {
 	const currentYear = new Date().getFullYear();
@@ -44,7 +45,8 @@ function YPGrWorkerMessageHandler(event) {
 }
 /* Uses a webworker if window.Worker exists other wise does calculation on main thread. */
 function createWorkbookForYear(year) {
-	window.workbook = XLSX.utils.book_new();
+	// window.workbook = XLSX.utils.book_new();
+	window.workbook = new Excel.Workbook();
 
 	// XLSX.utils.aoa_to_sheet
 	// delete to WebWorker so main thread is free.
@@ -81,26 +83,54 @@ function createWorkbookForYear(year) {
 		];
 		console.log(yearSheetData);
 		console.log(yearData[11]);
-		const worksheet = XLSX.utils.aoa_to_sheet(yearSheetData);
-		XLSX.utils.book_append_sheet(window.workbook, worksheet,'Planner');
+		// const worksheet = XLSX.utils.aoa_to_sheet(yearSheetData);
+		// XLSX.utils.book_append_sheet(window.workbook, worksheet,'Planner');
+		const worksheet = workbook.addWorksheet('Planner');
+		worksheet.pageSetup.orientation = 'landscape';
+		worksheet.addRows(yearSheetData);
+
+		/*
+		// Iterate over all rows (including empty rows) in a worksheet
+		worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
+			console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+			row.fill = {
+				type: 'pattern',
+				pattern: 'solid',
+				fgColor: {
+					argb: 'FFFFFF00'
+				},
+				bgColor: {
+					argb: 'FFFFFF00'
+				}
+
+			};
+		});
+
+		// Iterate over all non-null cells in a row
+		row.eachCell(function(cell, colNumber) {
+			console.log('Cell ' + colNumber + ' = ' + cell.value);
+		});
+		row.commit();
+	*/
+
 		$('#generated-year-data').html(
 			`
-				<table class="cinereousTable">
+				<table class="cinereousTable ypgr-table">
 					<thead>
-					<tr><td></td>${daysTop.map(value => `<td>${value}</td>`).join('')} </tr>
+					<tr><td></td>${daysTop.map(value => `<td class="ypgr-table-day">${value}</td>`).join('')} </tr>
 					</thead>
-					<tr><td>Jan</td>  ${generateConcatArray(yearData, 0).join('')}</tr>
-					<tr><td>Feb</td>  ${generateConcatArray(yearData, 1).join('')}</tr>
-					<tr><td>Mar</td>  ${generateConcatArray(yearData, 2).join('')}</tr>
-					<tr><td>Apr</td>  ${generateConcatArray(yearData, 3).join('')}</tr>
-					<tr><td>May</td>  ${generateConcatArray(yearData, 4).join('')}</tr>
-					<tr><td>Jun</td>  ${generateConcatArray(yearData, 5).join('')}</tr>
-					<tr><td>Jul</td>  ${generateConcatArray(yearData, 6).join('')}</tr>
-					<tr><td>Aug</td>  ${generateConcatArray(yearData, 7).join('')}</tr>
-					<tr><td>Sep</td>  ${generateConcatArray(yearData, 8).join('')}</tr>
-					<tr><td>Oct</td>  ${generateConcatArray(yearData, 9).join('')}</tr>
-					<tr><td>Nov</td>  ${generateConcatArray(yearData, 10).join('')}</tr>
-					<tr><td>Dec</td>  ${generateConcatArray(yearData, 11).join('')}</tr>
+					<tr><td class="ypgr-table-month">Jan</td>  ${generateConcatArray(yearData, 0).join('')}</tr>
+					<tr><td class="ypgr-table-month">Feb</td>  ${generateConcatArray(yearData, 1).join('')}</tr>
+					<tr><td class="ypgr-table-month">Mar</td>  ${generateConcatArray(yearData, 2).join('')}</tr>
+					<tr><td class="ypgr-table-month">Apr</td>  ${generateConcatArray(yearData, 3).join('')}</tr>
+					<tr><td class="ypgr-table-month">May</td>  ${generateConcatArray(yearData, 4).join('')}</tr>
+					<tr><td class="ypgr-table-month">Jun</td>  ${generateConcatArray(yearData, 5).join('')}</tr>
+					<tr><td class="ypgr-table-month">Jul</td>  ${generateConcatArray(yearData, 6).join('')}</tr>
+					<tr><td class="ypgr-table-month">Aug</td>  ${generateConcatArray(yearData, 7).join('')}</tr>
+					<tr><td class="ypgr-table-month">Sep</td>  ${generateConcatArray(yearData, 8).join('')}</tr>
+					<tr><td class="ypgr-table-month">Oct</td>  ${generateConcatArray(yearData, 9).join('')}</tr>
+					<tr><td class="ypgr-table-month">Nov</td>  ${generateConcatArray(yearData, 10).join('')}</tr>
+					<tr><td class="ypgr-table-month">Dec</td>  ${generateConcatArray(yearData, 11).join('')}</tr>
 				</table>
 			`
 		)
@@ -111,7 +141,18 @@ function createWorkbookForYear(year) {
 
 function downloadYearPlan(year) {
 	// Download file once we are done with creating the year planner.
-	XLSX.writeFile(window.workbook, `YPGr-${year}.xlsb`);
+	// XLSX.writeFile(window.workbook, `YPGr-${year}.xlsb`);
+	// window.workbook.xlsx.writeFile(`${year}.xlsx`).then(() => {
+	// 	// done
+	// });
+	window.workbook.xlsx.writeBuffer().then(buffer => {
+		const blob=new Blob([buffer], {type: "application/octet-stream"});// change resultByte to bytes
+
+		const link = document.createElement('a');
+		link.href = window.URL.createObjectURL(blob);
+		link.download = `${year}.xlsx`;
+		link.click();
+	});
 }
 
 function generateConcatArray(yearData, monthIndex) {
@@ -119,5 +160,6 @@ function generateConcatArray(yearData, monthIndex) {
 	if (daysToFillAtEnd === 7) {
 		daysToFillAtEnd = 0;
 	}
-	return [].concat(new Array(yearData[monthIndex][0]).fill('<td style="">X</td>'), yearData[monthIndex].map(value => '<td>=</td>'), new Array(daysToFillAtEnd).fill('<td>X</td>'));
+	// return [].concat(new Array(yearData[monthIndex][0]).fill(''), yearData[monthIndex].map(value => '='), new Array(daysToFillAtEnd).fill(''));
+	return [].concat(new Array(yearData[monthIndex][0]).fill('<td style="background-color: red;">X</td>'), yearData[monthIndex].map(value => '<td>=</td>'), new Array(daysToFillAtEnd).fill('<td style="background-color: red">X</td>'));
 }

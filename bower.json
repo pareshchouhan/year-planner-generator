@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "js-xlsx": "^0.14.0",
-    "jquery": "^3.4.1"
+    "jquery": "^3.4.1",
+    "requirejs": "^2.3.6"
   }
 }
