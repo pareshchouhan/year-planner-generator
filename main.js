@@ -45,7 +45,34 @@ function YPGrWorkerMessageHandler(event) {
 }
 
 function getMaxWeeksAndMaxDay(yearData) {
-	// const weeksCount = yearData.map(month => month.);
+	// get wether 5 week in a month or 4 week
+	const weeksCount = yearData.map(month => {
+		var weekCount = 0;
+		month.forEach(day => {
+			if (day == 6) {
+				weekCount++;
+			}
+		});
+		return weekCount;
+	});
+	var lastDayOfMonth = [];
+	weeksCount.forEach((count, index) => {
+		// for all month havving 5 week or more, find out which has last day as not sunday pr saturday.
+		if (count >= 5) {
+			// 0 being sunday, 6 being saturday.
+			if (yearData[index][yearData[index].length - 1] === 6 || yearData[index][yearData[index].length - 1] === 0) {
+				lastDayOfMonth.push(-1);
+			} else {
+				lastDayOfMonth.push(yearData[index][yearData[index].length - 1]);
+			}
+		} else {
+			lastDayOfMonth.push(-1);
+		}
+	})
+	// console.log('weeksCount', weeksCount, lastDayOfMonth);
+	// Days to add at the end will depend on the MaxValue of lastDayOfMonth
+	// say if it's tuesday add 2 more days after sunday.
+	return Math.max(...lastDayOfMonth);
 }
 
 /* Uses a webworker if window.Worker exists other wise does calculation on main thread. */
@@ -64,8 +91,14 @@ function createWorkbookForYear(year) {
 		const ypgrCore = new YGPrCore();
 		const yearData = ypgrCore.generateYearPlannerForYear(year);
 		let daysTop = [];
-		for (let i = 0 ; i < 6; i++) {
+		for (let i = 0 ; i < 5; i++) {
 			daysTop = daysTop.concat(YGPrCore.dayMap);
+		}
+		daysTop = daysTop.concat(YGPrCore.dayMap.slice(0, 1));
+		const daysToAdd = getMaxWeeksAndMaxDay(yearData);
+		console.log('daysToAdd', daysToAdd);
+		if (daysToAdd != -1) {
+			daysTop = daysTop.concat(YGPrCore.dayMap.slice(1, (daysToAdd + 1)%6));
 		}
 		// use 5 and find the lastEndDay and show till that date.
 		let emptyBlocksAtStart = yearData[0][0];
@@ -166,5 +199,6 @@ function generateConcatArray(yearData, monthIndex) {
 		daysToFillAtEnd = 0;
 	}
 	// return [].concat(new Array(yearData[monthIndex][0]).fill(''), yearData[monthIndex].map(value => '='), new Array(daysToFillAtEnd).fill(''));
-	return [].concat(new Array(yearData[monthIndex][0]).fill('<td class="ypgr-tab-inactive"></td>'), yearData[monthIndex].map(value => '<td class="ypgr-tab-active"></td>'), new Array(daysToFillAtEnd).fill('<td class="ypgr-tab-inactive"></td>'));
+	// return [].concat(new Array(yearData[monthIndex][0]).fill('<td class="ypgr-tab-inactive"></td>'), yearData[monthIndex].map(value => '<td class="ypgr-tab-active"></td>'), new Array(daysToFillAtEnd).fill('<td class="ypgr-tab-inactive"></td>'));
+	return [].concat(new Array(yearData[monthIndex][0]).fill('<td class="ypgr-tab-inactive"></td>'), yearData[monthIndex].map(value => '<td class="ypgr-tab-active"></td>'));
 }
