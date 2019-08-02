@@ -45,7 +45,7 @@ function YPGrWorkerMessageHandler(event) {
 }
 
 function getMaxWeeksAndMaxDay(yearData) {
-	const weeksCount = yearData.map(month => month.)
+	// const weeksCount = yearData.map(month => month.);
 }
 
 /* Uses a webworker if window.Worker exists other wise does calculation on main thread. */
