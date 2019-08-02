@@ -90,7 +90,7 @@ table.cinereousTable tfoot td {
 	color: white;
 }
 
-#pre-text {
+.pre-text {
 	text-align: center;
 	background: #6b86d4;
 	color: white;
@@ -98,6 +98,8 @@ table.cinereousTable tfoot td {
 	margin: auto;
 	margin-top: 1em;
 	font-size: 2em;
+	position: relative;
+	z-index: 1;
 }
 
 .ypgr-table-month {
