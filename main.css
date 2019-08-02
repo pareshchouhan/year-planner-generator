@@ -118,8 +118,18 @@ table.cinereousTable tfoot td {
 
 .ypgr-tab-active {
 	background: white;
+	position: relative;
 }
 
 .ypgr-tab-inactive {
 	border: 0px !important;
+}
+
+.ypgr-tab-day {
+	position: absolute;
+	top: 0px;
+	background: black;
+	color: white;
+	width: 100%;
+	left: 0px;
 }

@@ -202,5 +202,5 @@ function generateConcatArray(yearData, monthIndex) {
 	}
 	// return [].concat(new Array(yearData[monthIndex][0]).fill(''), yearData[monthIndex].map(value => '='), new Array(daysToFillAtEnd).fill(''));
 	// return [].concat(new Array(yearData[monthIndex][0]).fill('<td class="ypgr-tab-inactive"></td>'), yearData[monthIndex].map(value => '<td class="ypgr-tab-active"></td>'), new Array(daysToFillAtEnd).fill('<td class="ypgr-tab-inactive"></td>'));
-	return [].concat(new Array(yearData[monthIndex][0]).fill('<td class="ypgr-tab-inactive"></td>'), yearData[monthIndex].map(value => '<td class="ypgr-tab-active"></td>'));
+	return [].concat(new Array(yearData[monthIndex][0]).fill('<td class="ypgr-tab-inactive"></td>'), yearData[monthIndex].map((value, dayIndex) => `<td class="ypgr-tab-active"><span class="ypgr-tab-day">${dayIndex + 1}</span></td>`));
 }
