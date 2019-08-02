@@ -43,6 +43,11 @@ function initWebWorker() {
 function YPGrWorkerMessageHandler(event) {
 
 }
+
+function getMaxWeeksAndMaxDay(yearData) {
+	const weeksCount = yearData.map(month => month.)
+}
+
 /* Uses a webworker if window.Worker exists other wise does calculation on main thread. */
 function createWorkbookForYear(year) {
 	// window.workbook = XLSX.utils.book_new();
@@ -62,7 +67,7 @@ function createWorkbookForYear(year) {
 		for (let i = 0 ; i < 6; i++) {
 			daysTop = daysTop.concat(YGPrCore.dayMap);
 		}
-		console.log(daysTop.length);
+		// use 5 and find the lastEndDay and show till that date.
 		let emptyBlocksAtStart = yearData[0][0];
 		let emptyBlocksAtEnd = yearData[0][yearData[0].length - 1];
 		console.log(yearData[0][0]);
@@ -161,5 +166,5 @@ function generateConcatArray(yearData, monthIndex) {
 		daysToFillAtEnd = 0;
 	}
 	// return [].concat(new Array(yearData[monthIndex][0]).fill(''), yearData[monthIndex].map(value => '='), new Array(daysToFillAtEnd).fill(''));
-	return [].concat(new Array(yearData[monthIndex][0]).fill('<td style="background-color: red;">X</td>'), yearData[monthIndex].map(value => '<td>=</td>'), new Array(daysToFillAtEnd).fill('<td style="background-color: red">X</td>'));
+	return [].concat(new Array(yearData[monthIndex][0]).fill('<td class="ypgr-tab-inactive"></td>'), yearData[monthIndex].map(value => '<td class="ypgr-tab-active"></td>'), new Array(daysToFillAtEnd).fill('<td class="ypgr-tab-inactive"></td>'));
 }
