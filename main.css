@@ -58,6 +58,8 @@ table.cinereousTable tfoot td {
 	justify-content: space-around;
 	width: 500px;
 	margin: auto;
+	position: relative;
+	z-index: 1;
 }
 
 .ypgr-table {
