@@ -183,6 +183,8 @@ function downloadYearPlan(year) {
 	// window.workbook.xlsx.writeFile(`${year}.xlsx`).then(() => {
 	// 	// done
 	// });
+	window.print();
+	/*
 	window.workbook.xlsx.writeBuffer().then(buffer => {
 		const blob=new Blob([buffer], {type: "application/octet-stream"});// change resultByte to bytes
 
@@ -190,7 +192,7 @@ function downloadYearPlan(year) {
 		link.href = window.URL.createObjectURL(blob);
 		link.download = `${year}.xlsx`;
 		link.click();
-	});
+	});*/
 }
 
 function generateConcatArray(yearData, monthIndex) {
